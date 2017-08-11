@@ -4,6 +4,11 @@ import requests
 import VtoT
 import TtoV
 import os
+import re
+import jieba
+from wordcloud import WordCloud, ImageColorGenerator
+import PIL.Image as Image
+import numpy as np
 from itchat.content import TEXT,RECORDING
 itchat.auto_login(hotReload=True)
 
@@ -54,6 +59,39 @@ def text_reply(msg):
 				'female: %.2f' %(float(female)/len(friends)*100)+'%\n'+\
 				'other: %.2f' %(float(other)/len(friends)*100)+'%\n','filehelper')
 			return
+		if(msg['Text']=='cloud'):
+			slist = []
+			friends = itchat.get_friends(update=True)
+			for friend in friends:
+				sig = friend['Signature']
+
+				emoji = re.compile('<span.*?</span>')
+				none = re.compile('\s{2,}')
+
+				sig = emoji.sub("",sig)
+				sig = none.sub("",sig)
+				if len(sig)>0:
+					slist.append(sig)
+
+			text = "".join(slist)
+
+			wordList = jieba.cut(text, cut_all=True)
+			ws = " ".join(wordList)
+
+			coloring = np.array(Image.open("./wechat.jpg")) #词云的背景和颜色。这张图片在本地。
+
+
+			my_wordcloud = WordCloud(background_color="white", max_words=2000,
+			                         mask=coloring, max_font_size=60, random_state=42, scale=2,
+			                         font_path="C:\Windows\Fonts\msyhl.ttc").generate(ws) #生成词云。font_path="C:\Windows\Fonts\msyhl.ttc"指定字体，有些字不能解析中文，这种情况下会出现乱码。
+
+
+			file_name_p = 'test.jpg'
+
+			my_wordcloud.to_file(file_name_p)
+			itchat.send('@img@%s' % 'test.jpg','filehelper')
+			return
+
 
 		
 
