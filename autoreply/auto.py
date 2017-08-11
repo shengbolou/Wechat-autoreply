@@ -48,11 +48,12 @@ def text_reply(msg):
 			for friend in friends:
 				sex = friend['Sex']
 				if sex==1: male+=1
-				elif sex==0: female+=1
+				elif sex==2: female+=1
 				else: other+=1
 			itchat.send_msg('male: %.2f' %(float(male)/len(friends)*100)+'%\n'+\
 				'female: %.2f' %(float(female)/len(friends)*100)+'%\n'+\
 				'other: %.2f' %(float(other)/len(friends)*100)+'%\n','filehelper')
+			return
 
 		
 

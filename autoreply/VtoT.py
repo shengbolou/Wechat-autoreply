@@ -19,7 +19,6 @@ def translate(filename):
 	CUID = "vincentlou"
 	WAVE_TYPE = "wav"
 
-
 	f = open(WAVE_FILE,'rb')
 	wave_file = f.read()
 	speech = base64.b64encode(wave_file).decode('utf-8')
