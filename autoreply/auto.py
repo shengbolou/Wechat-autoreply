@@ -6,7 +6,7 @@ import TtoV
 import os
 import re
 import jieba
-from wordcloud import WordCloud, ImageColorGenerator
+from wordcloud import WordCloud
 import PIL.Image as Image
 import numpy as np
 from itchat.content import TEXT,RECORDING
@@ -51,6 +51,7 @@ def text_reply(msg):
 			friends = itchat.get_friends(update=True)
 			male = female = other = 0
 			for friend in friends:
+				print(friend)
 				sex = friend['Sex']
 				if sex==1: male+=1
 				elif sex==2: female+=1
@@ -78,25 +79,26 @@ def text_reply(msg):
 			wordList = jieba.cut(text, cut_all=True)
 			ws = " ".join(wordList)
 
-			coloring = np.array(Image.open("./wechat.jpg")) #词云的背景和颜色。这张图片在本地。
+			coloring = np.array(Image.open("./wechat.jpg"))
 
 
 			my_wordcloud = WordCloud(background_color="white", max_words=2000,
 			                         mask=coloring, max_font_size=60, random_state=42, scale=2,
-			                         font_path="C:\Windows\Fonts\msyhl.ttc").generate(ws) #生成词云。font_path="C:\Windows\Fonts\msyhl.ttc"指定字体，有些字不能解析中文，这种情况下会出现乱码。
+			                         font_path="C:\Windows\Fonts\msyhl.ttc").generate(ws)
 
 
-			file_name_p = 'test.jpg'
+			file_name_p = 'cloud.jpg'
 
 			my_wordcloud.to_file(file_name_p)
-			itchat.send('@img@%s' % 'test.jpg','filehelper')
+			itchat.send('@img@%s' % file_name_p,'filehelper')
+			os.remove(file_name_p)
 			return
 
 
 		
 
-	if (msg['FromUserName'] != hanhan and msg['ToUserName']!='filehelper') or STOP==1:
-		return
+	# if (msg['FromUserName'] != hanhan and msg['ToUserName']!='filehelper') or STOP==1:
+	# 	return
 
 	fromUser = itchat.search_friends(userName=msg['FromUserName'])['NickName']
 	print(fromUser+': '+msg['Text']+'\n')
@@ -107,8 +109,8 @@ def text_reply(msg):
 
 @itchat.msg_register(RECORDING)
 def voice_reply(msg):
-	if (msg['FromUserName'] != hanhan and msg['ToUserName']!='filehelper') or STOP==1:
-		return
+	# if (msg['FromUserName'] != hanhan and msg['ToUserName']!='filehelper') or STOP==1:
+	# 	return
 
 	fromUser = itchat.search_friends(userName=msg['FromUserName'])['NickName']
 	filename = msg['FileName'].split(".")[0]
