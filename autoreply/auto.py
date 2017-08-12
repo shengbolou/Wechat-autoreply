@@ -93,12 +93,33 @@ def text_reply(msg):
 			itchat.send('@img@%s' % file_name_p,'filehelper')
 			os.remove(file_name_p)
 			return
+		if(msg['Text']=='names'):
+			friends = itchat.get_friends(update=True)
+			nameList = []
+			for friend in friends:
+				print(friend['NickName'])
+				name = friend['NickName']
+				if len(name)>0:
+					nameList.append(name)
+			text = "".join(nameList)
+
+			coloring = np.array(Image.open("./wechat.jpg"))
+
+			wc = WordCloud(background_color="white", max_words=2000, mask=coloring,
+							max_font_size=60, random_state=42, scale=2,
+							font_path="C:\Windows\Fonts\msyhl.ttc").generate(text)
+			file_name = 'names.jpg'
+			wc.to_file(file_name)
+			itchat.send('@img@%s' % file_name, 'filehelper')
+			os.remove(file_name)
+			return
+
 
 
 		
 
-	# if (msg['FromUserName'] != hanhan and msg['ToUserName']!='filehelper') or STOP==1:
-	# 	return
+	if (msg['FromUserName'] != hanhan and msg['ToUserName']!='filehelper') or STOP==1:
+		return
 
 	fromUser = itchat.search_friends(userName=msg['FromUserName'])['NickName']
 	print(fromUser+': '+msg['Text']+'\n')
@@ -109,8 +130,8 @@ def text_reply(msg):
 
 @itchat.msg_register(RECORDING)
 def voice_reply(msg):
-	# if (msg['FromUserName'] != hanhan and msg['ToUserName']!='filehelper') or STOP==1:
-	# 	return
+	if (msg['FromUserName'] != hanhan and msg['ToUserName']!='filehelper') or STOP==1:
+		return
 
 	fromUser = itchat.search_friends(userName=msg['FromUserName'])['NickName']
 	filename = msg['FileName'].split(".")[0]
